@@ -46,9 +46,13 @@ static void help(std::filesystem::path program, std::string desc,
     for(auto& option : options){
         if(std::holds_alternative<CommandParser::Optional>(option)){
             CommandParser::Optional& opt = std::get<CommandParser::Optional>(option);
-            std::string ss = opt.name;
+            std::string ss;
             if(!opt.alias.empty()){
-                ss += ", " + opt.alias;
+                ss = opt.alias + ", ";
+            }
+            ss += opt.name;
+            if(opt.number == 1){
+                ss += "=NAME";
             }
             if(ss.size() > max_len){
                 max_len = ss.size();
@@ -60,9 +64,13 @@ static void help(std::filesystem::path program, std::string desc,
         std::visit(overloaded {
             [](CommandParser::Fixed&){},
             [&](CommandParser::Optional& opt){
-                std::string out = opt.name;
+                std::string out;
                 if(!opt.alias.empty()){
-                    out += ", " + opt.alias;
+                    out = opt.alias + ", ";
+                }
+                out += opt.name;
+                if(opt.number == 1){
+                    out += "=NAME";
                 }
                 std::cout << "  " << out << std::string(max_len - out.size() + 1, ' ') << opt.desc << std::endl;
             },
